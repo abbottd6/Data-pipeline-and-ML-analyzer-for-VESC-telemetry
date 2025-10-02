@@ -1,0 +1,69 @@
+<View>
+  <TimeSeries name="ts" valueType="url" value="$csv" sep="," 
+              timeColumn="ts_pst" timeFormat="%Y-%m-%d %H:%M:%S.%L">
+
+    <!-- Telemetry channels -->
+    <Channel column="ms_today" legend="ms_today"/>
+    <Channel column="speed_meters_per_sec" legend="Speed (m/s)"/>
+    <Channel column="erpm" legend="ERPM"/>
+    <Channel column="duty_cycle" legend="Duty Cycle"/>
+    <Channel column="current_in" legend="Current In"/>
+    <Channel column="current_motor" legend="Motor Current"/>
+    <Channel column="d_axis_current" legend="Id Current"/>
+    <Channel column="q_axis_current" legend="Iq Current"/>
+    <Channel column="roll" legend="Roll"/>
+    <Channel column="pitch" legend="Pitch"/>
+    <Channel column="yaw" legend="Yaw"/>
+    <Channel column="accX" legend="AccX"/>
+    <Channel column="accY" legend="AccY"/>
+    <Channel column="accZ" legend="AccZ"/>
+    <Channel column="gyroX" legend="GyroX"/>
+    <Channel column="gyroY" legend="GyroY"/>
+    <Channel column="gyroZ" legend="GyroZ"/>
+    <Channel column="gnss_lat" legend="GNSS Lat"/>
+    <Channel column="gnss_lon" legend="GNSS Lon"/>
+    <Channel column="gnss_alt" legend="GNSS Alt"/>
+    <Channel column="gnss_gVel" legend="GNSS gVel"/>
+    <Channel column="gnss_vVel" legend="GNSS vVel"/>
+    <Channel column="fault_code" legend="Fault Code"/>
+    <Channel column="d_axis_voltage" legend="Id Voltage"/>
+    <Channel column="q_axis_voltage" legend="Iq Voltage"/>
+    <Channel column="tacho_meters" legend="Tacho Meters"/>
+    <Channel column="tacho_abs_meters" legend="Tacho Abs Meters"/>
+    <Channel column="input_voltage" legend="Input Voltage"/>
+    <Channel column="temp_mos_max" legend="MOSFET Temp Max"/>
+    <Channel column="temp_motor" legend="Motor Temp"/>
+    <Channel column="battery_level" legend="Battery Level"/>
+  </TimeSeries>
+
+  <!-- Behavior labels -->
+  <Header value="Behaviors"/>
+  <TimeSeriesLabels name="behaviors" toName="ts" choice="multiple">
+    <Label value="cf_forward" background="#FFA39E"/>
+    <Label value="cf_reverse" background="#D4380D"/>
+    <Label value="cf_brake" background="#FFC069"/>
+    <Label value="cf_accel" background="#AD8B00"/>
+    <Label value="cf_cruise" background="#D3F261"/>
+    <Label value="cf_turn_left" background="#389E0D"/>
+    <Label value="cf_turn_right" background="#5CDBD3"/>
+    <Label value="cf_carve_left" background="#096DD9"/>
+    <Label value="cf_carve_right" background="#40A9FF"/>
+    <Label value="cf_ascent" background="#9254DE"/>
+    <Label value="cf_descent" background="#FF7594"/>
+    <Label value="cf_traction_loss" background="#FA3E9E"/>
+  </TimeSeriesLabels>
+
+  <!-- Per-behavior confidence inputs (0–1), shown only when that label is present -->
+  <Number name="conf_forward"       toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_forward"       min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_reverse"       toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_reverse"       min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_brake"         toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_brake"         min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_accel"         toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_accel"         min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_cruise"        toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_cruise"        min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_turn_left"     toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_turn_left"     min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_turn_right"    toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_turn_right"    min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_carve_left"    toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_carve_left"    min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_carve_right"   toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_carve_right"   min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_ascent"        toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_ascent"        min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_descent"       toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_descent"       min="0" max="1" step="0.05" slider="true"/>
+  <Number name="conf_traction_loss" toName="ts" perRegion="true" whenTagName="behaviors" whenLabelValue="cf_traction_loss" min="0" max="1" step="0.05" slider="true"/>
+</View>
