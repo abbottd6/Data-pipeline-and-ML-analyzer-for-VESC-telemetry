@@ -1,9 +1,8 @@
-<h1>VESC ML Telemetry Analyzer</h1>
-<p>(VMLTA, it flows off the tongue)</p>
-<br>
-<h3>Summary</h3>
-<br>
-<p>
+# VESC ML Telemetry Analyzer
+*(VMLTA, it flows off the tongue)*
+
+### Summary
+
 This is my capstone project for the WGU B.S. in Computer Science. The purpose of the project is to train a machine learning model to identify
 rider behaviors for onewheel style PEVs using telemetry data from the VESC open-source electronic speed controller software. I have developed
 a data preprocessing pipeline for ingestion, formatting, cleaning, normalizing sample rates, and classifying behaviors on a confidence scale 
