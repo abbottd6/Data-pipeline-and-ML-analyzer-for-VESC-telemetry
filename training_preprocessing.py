@@ -176,10 +176,14 @@ def normalize_sample_rate(df):
     next_ms = orig_ms[next_idx].astype("float64")
     next_ms[next_idx == len(orig_ms)] = np.nan
 
+    # gaps between real data readings
     span = (next_ms - prev_ms).astype("float64")
 
+    # array of indexes for row indexes to nan in the interpolated data.
     rows_to_nan = []
 
+    # iterating through the span array to compare spans to max span value allowed for interpolation
+    # adding to index to rows_to_nan if span is greater than max
     for i, s in enumerate(span):
         if (np.isfinite(prev_ms[i]) and
                 np.isfinite(next_ms[i]) and
@@ -187,15 +191,11 @@ def normalize_sample_rate(df):
                 on_grid[i] and
                 (not is_real_data[i])):
             # out.index[i] is the exact row label (timestamp) to null
-            print("i:", i, "s:", s, _elapsed_ms)
             rows_to_nan.append(out.index[i])
 
     print("rows_to_nan (count):", len(rows_to_nan), "first 10:", rows_to_nan[:10])
 
-    # print("Example spans over limit (first 20):", np.where(too_far)[0][:20])
-    # print("max raw gap (ms):", np.diff(np.sort(orig_ms)).max())
-    # print("rows flagged too_far:", np.count_nonzero(too_far))
-
+    # naning rows to nan from the loop above
     cols_to_nan = [c for c in num_cols if c not in label_cols and c not in prot_cols and c not in ("_elapsed_ms",)]
     out.loc[rows_to_nan, cols_to_nan] = np.nan
 
