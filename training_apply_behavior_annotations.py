@@ -32,13 +32,12 @@ def apply_behavior_exclusivity_rules(df, thresh=0.05):
         "steer_right": ["cf_turn_right", "cf_carve_right"],
         "traction_loss": ["cf_traction_loss"],
         "speed": ["cf_accel", "cf_brake", "cf_cruise"],
+        "env_grade": ["cf_ascent", "cf_descent"],
+        "direction": ["cf_forward", "cf_reverse"],
+        "idle": ["cf_idle"],
+        "active": ["cf_turn_left", "cf_carve_left", "cf_turn_right", "cf_carve_right", "cf_traction_loss",
+                   "cf_accel", "cf_brake", "cf_cruise", "cf_ascent", "cf_descent", "cf_forward", "cf_reverse"],
     }
-
-    # Groups of behaviors that are mutually exclusive
-    CROSS_EXCLUSIVE_GROUPS = [
-        ("steer_left", "steer_right"),
-        ("traction_loss", "speed"),
-    ]
 
     # groups within which the behaviors are mutually exclusive
     INTERNALLY_EXCLUSIVE_GROUPS = {
@@ -46,6 +45,13 @@ def apply_behavior_exclusivity_rules(df, thresh=0.05):
         "speed_internal": ["cf_accel", "cf_brake", "cf_cruise"],
         "env_grade": ["cf_ascent", "cf_descent"],
     }
+
+    # Groups of behaviors that are mutually exclusive
+    CROSS_EXCLUSIVE_GROUPS = [
+        ("steer_left", "steer_right"),
+        ("traction_loss", "speed"),
+        ("idle", "active"),
+    ]
 
     df = df.copy()
 

@@ -85,7 +85,7 @@ def load_log(path: str, ride_id: str, log_date_utc: datetime, tz_local="America/
 
     # behaviors to classify
     behaviors = [
-        "cf_forward", "cf_reverse", "cf_brake", "cf_accel", "cf_cruise", "cf_turn_left", "cf_turn_right",
+        "cf_idle", "cf_forward", "cf_reverse", "cf_brake", "cf_accel", "cf_cruise", "cf_turn_left", "cf_turn_right",
         "cf_carve_left", "cf_carve_right", "cf_ascent", "cf_descent", "cf_traction_loss"
     ]
 
@@ -216,7 +216,7 @@ def normalize_sample_rate(df):
     desired_order = [
         "ride_id", "sample_idx", "_elapsed_ms", "ts_utc", "ts_pst", "ms_today",
         "cf_accel", "cf_brake", "cf_cruise", "cf_turn_left", "cf_turn_right", "cf_carve_left",
-        "cf_carve_right", "cf_ascent", "cf_descent", "cf_traction_loss", "cf_forward", "cf_reverse",
+        "cf_carve_right", "cf_ascent", "cf_descent", "cf_traction_loss", "cf_idle", "cf_forward", "cf_reverse",
         "speed_meters_per_sec", "erpm", "duty_cycle", "current_in", "current_motor",
         "d_axis_current", "q_axis_current", "roll", "pitch", "yaw", "accX", "accY", "accZ",
         "gyroX", "gyroY", "gyroZ", "gnss_lat", "fault_code", "d_axis_voltage", "q_axis_voltage",
