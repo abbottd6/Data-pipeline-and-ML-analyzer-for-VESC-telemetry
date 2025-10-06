@@ -232,10 +232,16 @@ def normalize_sample_rate(df):
 
     return out
 
+def insert_video_timestamp_anchor_point("--vid_time", "log_time")
+
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("path", help="Filepath path to raw VESC CSV")
+    ap.add_argument("path", help="Filepath path to raw VESC CSV", required=True)
+    ap.add_argument("--vid_time", help="Timestamp from video to use as anchor for log synchronization \n "
+                                       "use format: mm:ss.ms")
+    ap.add_argument("--log_time", help="Timestamp from log corresponding to vid_time (ts_pst) \n "
+                                       "use format: 10/2/2025  1:43:42 PM")
     ap.add_argument("--ride-id", help="e.g., ride_03 (auto if folder like 'ride log 03')")
     args = ap.parse_args()
 
