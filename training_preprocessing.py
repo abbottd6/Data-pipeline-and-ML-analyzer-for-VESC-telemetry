@@ -71,6 +71,7 @@ def load_log(path: str, ride_id: str, log_date_utc: datetime, tz_local="America/
     # Add ride IDs and sample/reading IDs
     df["ride_id"] = ride_id
     df["sample_idx"] = np.arange(len(df))
+    # Add video_ts_anchor column and NaN the values
     df["video_ts_anchor"] = np.nan
 
     # Convert ms_today to relevant timestamps
@@ -235,27 +236,39 @@ def normalize_sample_rate(df):
 
 def insert_video_timestamp_anchor_point(df, vid_time_str, log_time):
     df["ts_pst"] = pd.to_datetime(df["ts_pst"], errors="coerce")
+    # set target time to search for to the ts_pst arg entered with the script run command
     target_time = pd.to_datetime(log_time)
     print("target_time:", target_time)
+    # find the closest ts_pst timestamp to the arg that was passed
     closest_idx = (df["ts_pst"] - target_time).abs().idxmin()
+    # get the row index of the closest ts_pst value
     start_pos = df.index.get_loc(closest_idx)
 
+    # convert the video ts to a TimeDelta so that it can be manipulated for +/- 100 ms steps
     base_video_time = pd.to_timedelta(vid_time_str)
 
+    # set iterable to the base video time to start the loop
     current = base_video_time
     for i, row in enumerate(df.itertuples(index=True)):
+        # for row indices that are less than the start_pos (i.e., samples before the anchor point that was chosen)
+        # subtract (difference in index positions * 100 ms) from the video_ts_anchor and insert this val into video_ts col
         if i < start_pos:
             step = start_pos - i
             df.loc[row.Index, "video_ts_anchor"] = format_video_ts(base_video_time - pd.to_timedelta(step*100, unit="ms"))
+        # for row indices greater than or equal to start_pos (i.e., anchor point and later samples) increment the
+        # base video time by 100 ms and insert it into video_ts_anchor
         else:
             df.loc[row.Index, "video_ts_anchor"] = format_video_ts(current)
             current += pd.Timedelta(milliseconds=100)
 
     return df
 
+# helper function for formatting TimeDeltas to hh:mm:ss.ms
 def format_video_ts(x):
+    # convert TimeDelta to number of total seconds
     secs = x.total_seconds()
 
+    # calculate hours, min, and secs from total seconds
     h = int(secs // 3600)
     m = int((secs % 3600) // 60)
     s = secs % 60
@@ -264,7 +277,7 @@ def format_video_ts(x):
 if __name__ == "__main__":
     """
     
-    find a notable event in video (vid_time) and corresponding log_time
+    find a notable event in video (vid_time) and the corresponding log_time (ts_pst)
     
     from training_preprocessing.py parent dir call: 
     
@@ -290,8 +303,11 @@ if __name__ == "__main__":
     #infer ride_id from parent folder name if not provided
     ride_id = infer_ride_id_from_parent_folder_name(args.path, args.ride_id)
 
+    # load log and add ride identifiers
     df = load_log(args.path, ride_id, ride_date)
+    # normalize log sample rate to 10 Hz and interpolate feature values
     df_resampled = normalize_sample_rate(df)
+    # add the corresponding video timestamp for reference during behavior labeling
     df_resampled = insert_video_timestamp_anchor_point(df_resampled, args.vid_time, args.log_time)
 
     # save a modified csv for manual review
