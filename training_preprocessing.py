@@ -241,8 +241,10 @@ def insert_video_timestamp_anchor_point(df, vid_time_str, log_time):
     print("target_time:", target_time)
     # find the closest ts_pst timestamp to the arg that was passed
     closest_idx = (df["ts_pst"] - target_time).abs().idxmin()
+    print("closest_idx:", closest_idx)
     # get the row index of the closest ts_pst value
     start_pos = df.index.get_loc(closest_idx)
+    print("start_pos:", start_pos)
 
     # convert the video ts to a TimeDelta so that it can be manipulated for +/- 100 ms steps
     base_video_time = pd.to_timedelta(vid_time_str)
@@ -278,6 +280,8 @@ if __name__ == "__main__":
     """
     
     find a notable event in video (vid_time) and the corresponding log_time (ts_pst)
+    **** log_time must be in 24 hr format, like: 13:46:19.5
+                                                 1:46 PM (19.5 sec)
     
     from training_preprocessing.py parent dir call: 
     
@@ -293,7 +297,7 @@ if __name__ == "__main__":
     ap.add_argument("--vid_time", help="Timestamp from video to use as anchor for log synchronization \n "
                                        "use format: hh:mm:ss.ms")
     ap.add_argument("--log_time", help="Timestamp from log corresponding to vid_time (ts_pst) \n "
-                                       "use format: mm/dd/yyyy  hh:mm:ss.ms")
+                                       "use format: yyyy-mm-dd hh:mm:ss.ms")
     ap.add_argument("--ride-id", help="e.g., ride_03 (auto if folder like 'ride log 03')")
     args = ap.parse_args()
 

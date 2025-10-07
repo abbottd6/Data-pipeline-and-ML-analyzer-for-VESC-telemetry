@@ -2,7 +2,7 @@ import pandas as pd, json, argparse, os
 
 def apply_ls_ranges(df, ls_csv_path):
     df = df.copy()
-    df['ts_pst_dt'] = pd.to_datetime(df['ts_pst'])
+    df['video_ts_anchor_td'] = pd.to_timedelta(df['video_ts_anchor'])
 
     # Label Studio annotation file
     ls = pd.read_csv(ls_csv_path)
@@ -16,13 +16,17 @@ def apply_ls_ranges(df, ls_csv_path):
             df[target] = pd.Series(pd.NA, index=df.index, dtype='float32')
         for cell in ls[col].dropna():
             for item in json.loads(cell):
-                start = pd.to_datetime(item['start'])
-                end = pd.to_datetime(item['end'])
+                start = item['start'].lstrip('+')
+                # print("start: ", start)
+                # print("target behavior: ", target, "\n")
+                start_td = pd.to_timedelta(start, errors="coerce")
+                end = item['end'].lstrip('+')
+                end_td = pd.to_timedelta(end, errors="coerce")
                 val = item.get('number', None)
                 if val  is None: continue
-                mask = (df['ts_pst_dt'] >= start) & (df['ts_pst_dt'] < end)
+                mask = (df['video_ts_anchor_td'] >= start_td) & (df['video_ts_anchor_td'] < end_td)
                 df.loc[mask, target] = pd.Series(val, index=df.index)[mask]
-    return df.drop(columns='ts_pst_dt')
+    return df.drop(columns='video_ts_anchor_td')
 
 def apply_behavior_exclusivity_rules(df, thresh=0.05):
 
