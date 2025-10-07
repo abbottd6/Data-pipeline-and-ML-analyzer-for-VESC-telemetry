@@ -71,6 +71,7 @@ def load_log(path: str, ride_id: str, log_date_utc: datetime, tz_local="America/
     # Add ride IDs and sample/reading IDs
     df["ride_id"] = ride_id
     df["sample_idx"] = np.arange(len(df))
+    df["video_ts_anchor"] = np.nan
 
     # Convert ms_today to relevant timestamps
     df["ts_utc"] = df["ms_today"].apply(lambda m: parse_ms_today(m, log_date_utc))
@@ -214,7 +215,7 @@ def normalize_sample_rate(df):
 
     # reorder table columns for priority
     desired_order = [
-        "ride_id", "sample_idx", "_elapsed_ms", "ts_utc", "ts_pst", "ms_today",
+        "ride_id", "sample_idx", "_elapsed_ms", "ts_utc", "ts_pst", "video_ts_anchor", "ms_today",
         "cf_accel", "cf_brake", "cf_cruise", "cf_turn_left", "cf_turn_right", "cf_carve_left",
         "cf_carve_right", "cf_ascent", "cf_descent", "cf_traction_loss", "cf_idle", "cf_forward", "cf_reverse",
         "speed_meters_per_sec", "erpm", "duty_cycle", "current_in", "current_motor",
@@ -232,16 +233,54 @@ def normalize_sample_rate(df):
 
     return out
 
-def insert_video_timestamp_anchor_point("--vid_time", "log_time")
+def insert_video_timestamp_anchor_point(df, vid_time_str, log_time):
+    df["ts_pst"] = pd.to_datetime(df["ts_pst"], errors="coerce")
+    target_time = pd.to_datetime(log_time)
+    print("target_time:", target_time)
+    closest_idx = (df["ts_pst"] - target_time).abs().idxmin()
+    start_pos = df.index.get_loc(closest_idx)
+
+    base_video_time = pd.to_timedelta(vid_time_str)
+
+    current = base_video_time
+    for i, row in enumerate(df.itertuples(index=True)):
+        if i < start_pos:
+            step = start_pos - i
+            df.loc[row.Index, "video_ts_anchor"] = format_video_ts(base_video_time - pd.to_timedelta(step*100, unit="ms"))
+        else:
+            df.loc[row.Index, "video_ts_anchor"] = format_video_ts(current)
+            current += pd.Timedelta(milliseconds=100)
+
+    return df
+
+def format_video_ts(x):
+    secs = x.total_seconds()
+
+    h = int(secs // 3600)
+    m = int((secs % 3600) // 60)
+    s = secs % 60
+    return f"{h:02d}:{m:02d}:{s:04.1f}"
 
 if __name__ == "__main__":
+    """
+    
+    find a notable event in video (vid_time) and corresponding log_time
+    
+    from training_preprocessing.py parent dir call: 
+    
+    python training_preprocessing.py "abs/path/to/log/file.csv" `
+>> --vid_time "00:00:30.7" `                                        # enter the vid_time as hh:mm:ss.ms
+>> --log_time "2025-09-30 11:07:17.5"                               # enter the log_time as yyyy-mm-dd hh:mm:ss.ms
+
+    """
+
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("path", help="Filepath path to raw VESC CSV", required=True)
+    ap.add_argument("path", help="Filepath path to raw VESC CSV")
     ap.add_argument("--vid_time", help="Timestamp from video to use as anchor for log synchronization \n "
-                                       "use format: mm:ss.ms")
+                                       "use format: hh:mm:ss.ms")
     ap.add_argument("--log_time", help="Timestamp from log corresponding to vid_time (ts_pst) \n "
-                                       "use format: 10/2/2025  1:43:42 PM")
+                                       "use format: mm/dd/yyyy  hh:mm:ss.ms")
     ap.add_argument("--ride-id", help="e.g., ride_03 (auto if folder like 'ride log 03')")
     args = ap.parse_args()
 
@@ -253,6 +292,7 @@ if __name__ == "__main__":
 
     df = load_log(args.path, ride_id, ride_date)
     df_resampled = normalize_sample_rate(df)
+    df_resampled = insert_video_timestamp_anchor_point(df_resampled, args.vid_time, args.log_time)
 
     # save a modified csv for manual review
     out_csv = os.path.splitext(args.path)[0] + "_preview.csv"
