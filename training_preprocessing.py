@@ -312,6 +312,7 @@ if __name__ == "__main__":
     # normalize log sample rate to 10 Hz and interpolate feature values
     df_resampled = normalize_sample_rate(df)
     # add the corresponding video timestamp for reference during behavior labeling
+    # COMMENT OUT LINE 316 FOR INITIAL PREPROCESSING TO FIND VIDEO/LOG TIME ANCHORS
     df_resampled = insert_video_timestamp_anchor_point(df_resampled, args.vid_time, args.log_time)
 
     # save a modified csv for manual review
