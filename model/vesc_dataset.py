@@ -20,7 +20,7 @@ FEATURE_COLS: List[str] = [
     "d_axis_voltage", "q_axis_voltage", "roll", "pitch", "yaw", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ",
     "tacho_meters", "tacho_abs_meters",
     # GPS features
-    "gnss_gVel", "gnss_vVel",
+    "gnss_gVel", "gnss_alt",
     # power and thermal
     "input_voltage", "temp_mos_max", "temp_motor", "battery_level",
     # log time
