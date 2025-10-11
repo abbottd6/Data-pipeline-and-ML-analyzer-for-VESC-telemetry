@@ -29,7 +29,7 @@ common = dict(
 ds_train = VESCTimeSeriesDataset(VESCDatasetConfig(files=train_csvs, **common))
 
 # load normalization
-stats = np.load("norm_stats.npz", allow_pickle=True)
+stats = np.load("testing/norm_stats.npz", allow_pickle=True)
 mean = torch.from_numpy(stats["mean"]).to(device)  # (C,)
 std  = torch.from_numpy(stats["std"]).to(device)   # (C,)
 

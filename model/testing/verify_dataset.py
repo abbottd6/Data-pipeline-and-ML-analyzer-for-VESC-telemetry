@@ -1,6 +1,6 @@
 import numpy as np
 from torch.utils.data import DataLoader
-from vesc_dataset import VESCDatasetConfig, VESCTimeSeriesDataset, CONFIDENCE_COLS
+from model.vesc_dataset import VESCDatasetConfig, VESCTimeSeriesDataset, CONFIDENCE_COLS
 
 # build dataset
 cfg = VESCDatasetConfig(

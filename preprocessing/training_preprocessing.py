@@ -313,7 +313,7 @@ if __name__ == "__main__":
     df_resampled = normalize_sample_rate(df)
     # add the corresponding video timestamp for reference during behavior labeling
     # COMMENT OUT LINE 316 FOR INITIAL PREPROCESSING TO FIND VIDEO/LOG TIME ANCHORS
-    df_resampled = insert_video_timestamp_anchor_point(df_resampled, args.vid_time, args.log_time)
+    #df_resampled = insert_video_timestamp_anchor_point(df_resampled, args.vid_time, args.log_time)
 
     # save a modified csv for manual review
     out_csv = os.path.splitext(args.path)[0] + "_preview.csv"
