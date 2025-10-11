@@ -1,15 +1,17 @@
 from dataclasses import dataclass
-from importlib.metadata import files
 from typing import List, Optional, Sequence, Tuple
+import torch
 import numpy as np
 import pandas as pd
-import torch
 from torch.utils.data import Dataset, DataLoader
-import seaborn as sns
 
 CONFIDENCE_COLS: List[str] = [
     "cf_accel", "cf_brake", "cf_cruise", "cf_turn_left", "cf_turn_right", "cf_carve_left", "cf_carve_right",
     "cf_ascent", "cf_descent", "cf_traction_loss", "cf_idle", "cf_forward", "cf_reverse",
+]
+
+GNSS_COLS: List[str] = [
+    "gnss_lon", "gnss_lat", "gnss_alt", "gnss_gVel", "gnss_vVel",
 ]
 
 # allow-list for features
@@ -20,15 +22,14 @@ FEATURE_COLS: List[str] = [
     "d_axis_voltage", "q_axis_voltage", "roll", "pitch", "yaw", "accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ",
     "tacho_meters", "tacho_abs_meters",
     # GPS features
-    "gnss_gVel", "gnss_alt",
+    #"gnss_gVel", "gnss_alt",
     # power and thermal
     "input_voltage", "temp_mos_max", "temp_motor", "battery_level",
-    # log time
-    "ms_today",
 ]
 
 EXCLUDE_COLS: set = {
-    "ride_id", "sample_idx", "_elapsed_ms", "ts_utc", "ts_pst", "dt_ms", "_on_grid", "fault_code", *CONFIDENCE_COLS,
+    "ride_id", "sample_idx", "_elapsed_ms", "ms_today", "ts_utc", "ts_pst", "dt_ms", "_on_grid", "fault_code",
+    *CONFIDENCE_COLS, *GNSS_COLS,
 }
 
 @dataclass
@@ -44,7 +45,7 @@ class VESCDatasetConfig:
     # normalized sample rate from preprocessing
     sampling_hz: float = 10.0
     # behavior window duration
-    window_ms: int = 2000
+    window_ms: int = 1500
     # stride length
     stride_ms: int = 500
     # skip windows with too many NaNs in feature cols
@@ -150,12 +151,12 @@ class VESCTimeSeriesDataset(Dataset):
 if __name__ == "__main__":
     cfg = VESCDatasetConfig(
         files = [
-            "C:/Users/dayto/Desktop/WGU/C964 Capstone/Preprocessing Scripts/Sample_VESC_Logs_pipeline_testing/ride log 102/ride_102_labeled.csv",
+            r"C:/Users/dayto/Desktop/WGU/C964 Capstone/vesc_analyzer/processed_training_logs",
         ],
         feature_cols = None,
         conf_cols = CONFIDENCE_COLS,
         sampling_hz = 10.0,
-        window_ms = 2000,
+        window_ms = 3000,
         stride_ms = 500,
         min_valid_ratio = 0.7,
     )
@@ -165,6 +166,7 @@ if __name__ == "__main__":
 
     print(len(ds))
 
+    print("num windows:", len(ds))
     X, y = next(iter(dl))
     print("X shape: ", X.shape)
     print("y shape: ", y.shape)
