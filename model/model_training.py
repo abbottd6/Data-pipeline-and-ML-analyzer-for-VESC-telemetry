@@ -45,7 +45,7 @@ dl = DataLoader(ds_small, batch_size=64, shuffle=True, num_workers=0)
 C_in  = len(ds_train._dfs[0].attrs["feature_cols"])
 C_out = len(CONFIDENCE_COLS)
 
-# model
+# training model
 class CNN(nn.Module):
     def __init__(self, c_in, c_out):
         super().__init__()
@@ -58,10 +58,13 @@ class CNN(nn.Module):
         )
         self.head = nn.Linear(64, c_out)
 
-    def forward(self, x):          # x: (B, T, C)
-        x = x.permute(0, 2, 1)     # -> (B, C, T)
+    # x: (B, T, C)
+    def forward(self, x):
+        # translate to (B, C, T)
+        x = x.permute(0, 2, 1)
         h = self.net(x).squeeze(-1)
-        return self.head(h)        # logits
+        # (B, C_out) logits
+        return self.head(h)
 
 model = CNN(C_in, C_out).to(device)
 opt = torch.optim.Adam(model.parameters(), lr=1e-3)
