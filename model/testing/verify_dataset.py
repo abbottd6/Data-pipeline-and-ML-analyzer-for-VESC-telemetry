@@ -5,7 +5,8 @@ from vesc_dataset import VESCDatasetConfig, VESCTimeSeriesDataset, CONFIDENCE_CO
 # build dataset
 cfg = VESCDatasetConfig(
     files=[
-        "C:/Users/dayto/Desktop/WGU/C964 Capstone/Preprocessing Scripts/Sample_VESC_Logs_pipeline_testing/ride log 102/ride_102_labeled.csv",
+        "C:/Users/dayto/Desktop/WGU/C964 Capstone/vesc_analyzer/processed_training_logs/log_18_labeled.csv",
+
     ],
     conf_cols=CONFIDENCE_COLS,
     sampling_hz=10.0,
