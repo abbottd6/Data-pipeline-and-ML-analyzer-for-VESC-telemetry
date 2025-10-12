@@ -39,7 +39,7 @@ class VESCDatasetConfig:
     # feature columns
     feature_cols: Optional[List[str]] = None
     #confidence columns
-    conf_cols: Optional[List[str]] = None
+    conf_cols: List[str] = None
     #timestamp to use
     time_col: str = "ms_today"
     # normalized sample rate from preprocessing
@@ -66,8 +66,8 @@ class VESCTimeSeriesDataset(Dataset):
         # file id, start, end
         self._index: List[Tuple[int, int, int]] = []
 
-        # if self.cfg.conf_cols is None or len(self.cfg.conf_cols) == 0:
-        #     raise ValueError("No behavior confidences provided.")
+        if self.cfg.conf_cols is None or len(self.cfg.conf_cols) == 0:
+            raise ValueError("No behavior confidences provided.")
 
         # Load
         for path in cfg.files:
@@ -85,16 +85,11 @@ class VESCTimeSeriesDataset(Dataset):
                 feature_cols = [c for c in cfg.feature_cols if c in df.columns]
 
             # confirm excluded columns have been removed from features
-            # feature_cols = [c for c in feature_cols if c not in EXCLUDE_COLS]
-
-            has_labels = bool(cfg.conf_cols) and all(c in df.columns for c in cfg.conf_cols)
-            df.attrs["has_labels"] = has_labels
+            feature_cols = [c for c in feature_cols if c not in EXCLUDE_COLS]
 
             # define columns that are completely necessary, removing other cols to save memory
-            required = set(feature_cols + [cfg.time_col])
-            if has_labels:
-                required |= set(cfg.conf_cols)
-            df = df[list(required & set(df.columns))].reset_index(drop=True)
+            required = list(set(feature_cols + cfg.conf_cols + [cfg.time_col]) & set(df.columns))
+            df = df[required].reset_index(drop=True)
 
             # store metadata for each file
             df.attrs["feature_cols"] = feature_cols
@@ -138,24 +133,17 @@ class VESCTimeSeriesDataset(Dataset):
         # T, C_features
         X = torch.from_numpy(X.to_numpy(dtype=np.float32))
 
-        # # mean of confidences without warnings
-        # conf_win = df.loc[s:e - 1, self.cfg.conf_cols].to_numpy(dtype=np.float32)
-        # finite = np.isfinite(conf_win)
-        # counts = finite.sum(axis=0)
-        # sums = np.where(finite, conf_win, 0.0).sum(axis=0)
-        # conf_mean = sums / np.maximum(counts, 1)  # if count==0 → 0
-        # y = torch.from_numpy(conf_mean.astype(np.float32))
+        # mean of confidences without warnings
+        conf_win = df.loc[s:e - 1, self.cfg.conf_cols].to_numpy(dtype=np.float32)
+        finite = np.isfinite(conf_win)
+        counts = finite.sum(axis=0)
+        sums = np.where(finite, conf_win, 0.0).sum(axis=0)
+        conf_mean = sums / np.maximum(counts, 1)  # if count==0 → 0
+        y = torch.from_numpy(conf_mean.astype(np.float32))
 
-        if df.attrs.get("has_labels", False):
-            conf_win = df.loc[s:e-1, self.cfg.conf_cols].to_numpy(dtype=np.float32)
-            finite = np.isfinite(conf_win)
-            counts = finite.sum(axis=0)
-            sums = np.where(finite, conf_win, 0.0).sum(axis=0)
-            conf_mean = sums /np.maximum(counts, 1)
-            y = torch.from_numpy(conf_mean.astype(np.float32))
-        else:
-            C_out = len(self.cfg.conf_cols or [])
-            y = torch.full((C_out,), float("nan"), dtype=torch.float32)
+        # # mean per class
+        # conf = np.nanmean(conf, axis=0)
+        # conf = np.nan_to_num(conf, nan=0.0)
 
         return X, y
 

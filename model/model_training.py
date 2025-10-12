@@ -4,7 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from viz_utils import viz_timeline
 
-from build_data_splits import ds_validation
+from build_data_splits import ds_validation, dl_validation
 from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
 from data_utils import collect_csv_logs, organize_by_name
 
@@ -45,7 +45,7 @@ dl = DataLoader(ds_small, batch_size=64, shuffle=True, num_workers=0)
 C_in  = len(ds_train._dfs[0].attrs["feature_cols"])
 C_out = len(CONFIDENCE_COLS)
 
-# training model
+# the model
 class CNN(nn.Module):
     def __init__(self, c_in, c_out):
         super().__init__()
@@ -70,8 +70,14 @@ model = CNN(C_in, C_out).to(device)
 opt = torch.optim.Adam(model.parameters(), lr=1e-3)
 crit = nn.BCEWithLogitsLoss()
 
-# overfit correction loop
-for epoch in range(40):
+best_val = float("inf")
+
+# early stopping
+patience, bad = 8, 0
+
+# model training
+for epoch in range(100):
+    model.train()
     running = 0.0
     for step, (xb, yb) in enumerate(dl, 1):
         xb, yb = xb.to(device), yb.to(device)
@@ -87,6 +93,37 @@ for epoch in range(40):
         if step % 10 == 0:
             print(f"epoch {epoch+1} step {step} loss {running/10:.4f}")
             running = 0.0
+
+    # model validation
+    model.eval()
+    val_loss, n = 0.0, 0
+    with torch.no_grad():
+        for xb, yb in dl_validation:
+            xb, yb = xb.to(device), yb.to(device)
+            xb = normalize_batch(xb)
+            logits = model(xb)
+            loss = crit(logits, yb)
+            val_loss += float(loss) + yb.size(0)
+            n += yb.size(0)
+    val_loss /= max(n, 1)
+    print(f"epoch {epoch+1} loss {val_loss:.4f}")
+
+    # save best model weights
+    if val_loss + 1e-4 < best_val:
+        best_val = val_loss
+        bad = 0
+        torch.save(model.state_dict(), "best_model.pt")
+        print(f"model saved at epoch {epoch+1}")
+    else:
+        bad += 1
+        if bad >= patience:
+            print("Early stopping.")
+            break
+
+    #load best for final eval
+    model.load_state_dict(torch.load("best_model.pt", map_location=device))
+    model.eval()
+
 
 CLASS_NAMES = CONFIDENCE_COLS  # same order
 

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pytz
 import re
 import os
+import argparse
 
 def infer_log_date_from_filename(path: str):
     """
@@ -290,8 +291,6 @@ if __name__ == "__main__":
 >> --log_time "2025-09-30 11:07:17.5"                               # enter the log_time as yyyy-mm-dd hh:mm:ss.ms
 
     """
-
-    import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("path", help="Filepath path to raw VESC CSV")
     ap.add_argument("--vid_time", help="Timestamp from video to use as anchor for log synchronization \n "
