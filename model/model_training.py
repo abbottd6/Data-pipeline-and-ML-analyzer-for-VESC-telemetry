@@ -4,9 +4,9 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from viz_utils import viz_timeline
 
-from build_data_splits import ds_validation, dl_validation
-from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
-from data_utils import collect_csv_logs, organize_by_name
+from model.build_data_splits import ds_validation, dl_validation
+from model.vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
+from model.data_utils import collect_csv_logs, organize_by_name
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

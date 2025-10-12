@@ -1,9 +1,11 @@
+import os
+
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
 
-from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
-from data_utils import collect_csv_logs, organize_by_name
+from model.vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
+from model.data_utils import collect_csv_logs, organize_by_name
 
 # assign training log dir and specify validation and test logs
 ALL= ["C:/Users/dayto/Desktop/WGU/C964 Capstone/vesc_analyzer/processed_training_logs"]
@@ -66,8 +68,8 @@ for i in range(min(8, C_in)):
     print(f"ch{i:02d}: mean≈{float(approx_mean[i]): .2f}  std≈{float(approx_std[i]): .2f}")
 
 # save for training
-np.savez("norm_stats.npz",
+np.savez((os.path.join("model","norm_stats.npz")),
          mean=mean.numpy(),
          std=std.numpy(),
          feature_cols=np.array(ds_train._dfs[0].attrs["feature_cols"], dtype=object))
-print("\nSaved norm_stats.npz")
+print("\nSaved model/norm_stats.npz")

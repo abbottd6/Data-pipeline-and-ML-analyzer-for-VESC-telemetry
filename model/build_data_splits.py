@@ -1,5 +1,5 @@
-from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
-from data_utils import collect_csv_logs, organize_by_name
+from model.vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
+from model.data_utils import collect_csv_logs, organize_by_name
 from torch.utils.data import DataLoader
 
 # collect training logs from the dir where all the logs are
