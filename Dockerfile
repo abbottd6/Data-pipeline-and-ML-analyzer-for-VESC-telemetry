@@ -15,10 +15,10 @@ RUN pip install -r requirements.txt
 COPY . .
 
 RUN mkdir -p /app/uploads /app/tmp_processed && \
-    cp -r .streamlit/* /home/appuser/.streamlit/ && \
+    cp -r .streamlit/* /home/appuser/ && \
     chown -R appuser:appuser /app /home/appuser
 
 USER appuser
 
 EXPOSE 7860
-CMD ["streamlit", "run", "application/app.py", "--server.address=0.0.0.0", "--server.port=7860"]
+CMD ["streamlit", "run", "application/app.py", "--server.addess=0.0.0.0", "--server.port=7860"]
