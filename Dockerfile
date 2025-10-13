@@ -1,7 +1,6 @@
 FROM python:3.11-slim
 
-ENV PIP_NO_CACHE_DIR=1
-PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1 PYTHONUNBUFFERED=1
 
 RUN useradd -m -u 1000 appuser
 ENV HOME=/home/appuser
