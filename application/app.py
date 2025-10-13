@@ -239,8 +239,8 @@ def build_plotly_bars(tsec, preds, selected_behaviors, *, stack=False):
         "cf_brake": "#ff4f00",  # orange
         "cf_turn_left": "#1f77b4",  # blue
         "cf_turn_right": "#92d1e8",  # light blue
-        "cf_carve_left": "#9467bd",  # purple
-        "cf_carve_right": "#bf9ed5",  # light purple
+        "cf_carve_left": "#9467bd",  # dark purple
+        "cf_carve_right": "#dcb6f5",  # light purple
         "cf_ascent": "#e3a3ce",  # pink
         "cf_descent": "#ffbb78",  # light orange
         "cf_forward": "#17becf",  # cyan
