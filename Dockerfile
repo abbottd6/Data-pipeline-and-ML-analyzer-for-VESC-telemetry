@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 RUN mkdir -p /app/uploads /app/tmp_processed && \
-    cp -r .streamlit/* /home/appuser/.streamlit/ ** \
+    cp -r .streamlit/* /home/appuser/.streamlit/ && \
     chown -R appuser:appuser /app /home/appuser
 
 USER appuser
