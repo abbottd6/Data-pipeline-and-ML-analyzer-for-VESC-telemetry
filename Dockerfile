@@ -20,4 +20,5 @@ RUN mkdir -p /app/uploads /app/tmp_processed && \
 USER appuser
 
 EXPOSE 7860
-CMD ["streamlit", "run", "application/app.py", "--server.address=0.0.0.0", "--server.port=7860"]
+CMD ["streamlit", "run", "application/app.py", "--server.address=0.0.0.0", "--server.port=7860",
+"--server.enableXsrfProtection=false"]
