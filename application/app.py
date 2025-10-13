@@ -297,7 +297,7 @@ def build_plotly_bars(tsec, preds, selected_behaviors, *, stack=False):
         barmode=("stack" if stack else "overlay"),
         hovermode="x unified",
         xaxis=dict(title="Time (s)"),
-        yaxis=dict(title="Confidence", range=[0.1, 1.0]),
+        yaxis=dict(title="Confidence", range=[0.0, 1.0]),
         legend=dict(orientation="h", y=1.12),
         template="plotly_dark",
         margin=dict(l=40, r=20, t=40, b=40),
