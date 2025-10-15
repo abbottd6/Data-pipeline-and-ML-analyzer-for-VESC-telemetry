@@ -4,9 +4,9 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from viz_utils import viz_timeline
 
-from model.build_data_splits import ds_validation, dl_validation
-from model.vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
-from model.data_utils import collect_csv_logs, organize_by_name
+from build_data_splits import ds_validation, dl_validation
+from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
+from data_utils import collect_csv_logs, organize_by_name
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -46,14 +46,34 @@ C_in  = len(ds_train._dfs[0].attrs["feature_cols"])
 C_out = len(CONFIDENCE_COLS)
 
 # the model
+class ResBlock(nn.Module):
+    def __init__(self, ch: int):
+        super().__init__()
+        self.block = nn.Sequential(
+            nn.Conv1d(ch, 24, kernel_size=3, padding=1),
+            # nn.BatchNorm1d(24),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(24, 24, kernel_size=3, padding=1, dilation=1),
+            nn.BatchNorm1d(24),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, x):
+        return torch.relu(x + self.block(x))
+
 class CNN(nn.Module):
     def __init__(self, c_in, c_out):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Conv1d(c_in, 64, kernel_size=5, padding=2),
-            nn.ReLU(),
-            nn.Conv1d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
+            nn.Conv1d(c_in, 24, kernel_size=3, padding=2),
+            nn.BatchNorm1d(24),
+            nn.ReLU(inplace=True),
+            ResBlock(24),
+            nn.Conv1d(24, 32, kernel_size=3, padding=1, dilation=1),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(32, 64, kernel_size=3, padding=1, dilation=2),
+            nn.BatchNorm1d(64),
+            nn.ReLU(inplace=True),
             nn.AdaptiveAvgPool1d(1),
         )
         self.head = nn.Linear(64, c_out)
@@ -79,6 +99,7 @@ patience, bad = 8, 0
 for epoch in range(100):
     model.train()
     running = 0.0
+    #xb == batch inputs, yb == batch targets
     for step, (xb, yb) in enumerate(dl, 1):
         xb, yb = xb.to(device), yb.to(device)
         xb = normalize_batch(xb)
@@ -103,7 +124,7 @@ for epoch in range(100):
             xb = normalize_batch(xb)
             logits = model(xb)
             loss = crit(logits, yb)
-            val_loss += float(loss) + yb.size(0)
+            val_loss += float(loss)
             n += yb.size(0)
     val_loss /= max(n, 1)
     print(f"epoch {epoch+1} loss {val_loss:.4f}")
