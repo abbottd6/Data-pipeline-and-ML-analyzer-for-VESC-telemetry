@@ -45,7 +45,7 @@ class VESCDatasetConfig:
     # normalized sample rate from preprocessing
     sampling_hz: float = 10.0
     # behavior window duration
-    window_ms: int = 1500
+    window_ms: int = 3000
     # stride length
     stride_ms: int = 500
     # skip windows with too many NaNs in feature cols
@@ -130,21 +130,13 @@ class VESCTimeSeriesDataset(Dataset):
 
         X = df.loc[s:e-1, feats].astype(np.float32)
 
-        # THIS IS WRONG. DON'T WANT IT FILLING 0.0 EVERYWHERE
+
         if self.cfg.fill_forward_then_zero:
             X = X.ffill().fillna(0.0)
         else:
             X = X.fillna(0.0)
         # T, C_features
         X = torch.from_numpy(X.to_numpy(dtype=np.float32))
-
-        # # mean of confidences without warnings
-        # conf_win = df.loc[s:e - 1, self.cfg.conf_cols].to_numpy(dtype=np.float32)
-        # finite = np.isfinite(conf_win)
-        # counts = finite.sum(axis=0)
-        # sums = np.where(finite, conf_win, 0.0).sum(axis=0)
-        # conf_mean = sums / np.maximum(counts, 1)  # if count==0 → 0
-        # y = torch.from_numpy(conf_mean.astype(np.float32))
 
         if df.attrs.get("has_labels", False):
             conf_win = df.loc[s:e-1, self.cfg.conf_cols].to_numpy(dtype=np.float32)

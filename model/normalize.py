@@ -4,8 +4,8 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader
 
-from model.vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
-from model.data_utils import collect_csv_logs, organize_by_name
+from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
+from data_utils import collect_csv_logs, organize_by_name
 
 # assign training log dir and specify validation and test logs
 ALL= ["C:/Users/dayto/Desktop/WGU/C964 Capstone/vesc_analyzer/processed_training_logs"]
