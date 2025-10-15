@@ -65,7 +65,7 @@ class CNN(nn.Module):
     def __init__(self, c_in, c_out):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Conv1d(c_in, 24, kernel_size=3, padding=2),
+            nn.Conv1d(c_in, 24, kernel_size=3, padding=1),
             nn.BatchNorm1d(24),
             nn.ReLU(inplace=True),
             ResBlock(24),
