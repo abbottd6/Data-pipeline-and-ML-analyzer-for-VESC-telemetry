@@ -3,9 +3,11 @@ import numpy as np
 from torch import nn
 from torch.utils.data import DataLoader, Subset
 import torch.nn.functional as Functional
+
+from eval import eval_masked_bce_on_loader, eval_macro_mae_on_loader
 from viz_utils import viz_timeline
 
-from build_data_splits import ds_validation, dl_validation
+from build_data_splits import ds_validation, dl_validation, dl_test
 from vesc_dataset import VESCTimeSeriesDataset, VESCDatasetConfig, CONFIDENCE_COLS
 from data_utils import collect_csv_logs, organize_by_name
 
@@ -13,7 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # rebuild splits
 ALL = ["C:/Users/dayto/Desktop/WGU/C964 Capstone/vesc_analyzer/processed_training_logs"]
-VAL_LOGS  = ["log_52_labeled.csv", "log_53_labeled.csv"]
+VAL_LOGS  = ["log_53_labeled.csv"] # removed "log_52_labeled.csv"
 TEST_LOGS = ["log_31_labeled.csv"]
 all_csvs = collect_csv_logs(ALL)
 train_csvs, val_csvs, test_csvs = organize_by_name(all_csvs, VAL_LOGS, TEST_LOGS)
@@ -30,7 +32,7 @@ common = dict(
 ds_train = VESCTimeSeriesDataset(VESCDatasetConfig(files=train_csvs, **common))
 
 # load normalization
-stats = np.load("norm_stats.npz", allow_pickle=True)
+stats = np.load("model/norm_stats.npz", allow_pickle=True)
 mean = torch.from_numpy(stats["mean"]).to(device)  # (C,)
 std  = torch.from_numpy(stats["std"]).to(device)   # (C,)
 
@@ -215,3 +217,9 @@ viz_timeline(ds_validation, model, normalize_batch, device,
              class_names=CONFIDENCE_COLS,
              class_subset=("cf_accel", "cf_brake", "cf_turn_left", "cf_turn_right"),
              file_stem=None)
+
+# metrics
+test_bce = eval_masked_bce_on_loader(model, dl_test, normalize_batch, device)
+macro_mae, maes = eval_macro_mae_on_loader(model, dl_test, normalize_batch, device)
+print(f"Test masked BCE: {test_bce:.4f}")
+print(f"Macro MAE:       {macro_mae:.4f}")
