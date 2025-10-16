@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from torch import nn
 from torch.utils.data import DataLoader, Subset
+import torch.nn.functional as Functional
 from viz_utils import viz_timeline
 
 from build_data_splits import ds_validation, dl_validation
@@ -37,6 +38,15 @@ def normalize_batch(xb: torch.Tensor) -> torch.Tensor:
     # xb: (B, T, C)
     return (xb - mean) / std
 
+def masked_bce_with_logits_loss(logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    mask = ~torch.isnan(targets)
+    if mask.sum() == 0:
+        return logits.new_tensor(0.0)
+    safe_targets = torch.nan_to_num(targets, nan=0.0)
+    loss_elem = Functional.binary_cross_entropy_with_logits(logits, safe_targets, reduction="none")
+    loss = (loss_elem * mask.float()).sum() / mask.float().sum()
+    return loss
+
 # dataloader for overfit
 N = min(512, len(ds_train))
 ds_small = Subset(ds_train, list(range(N)))
@@ -70,6 +80,10 @@ class CNN(nn.Module):
             nn.ReLU(inplace=True),
             ResBlock(24),
             nn.Conv1d(24, 32, kernel_size=3, padding=1, dilation=1),
+            nn.BatchNorm1d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(32, 32, kernel_size=3, padding=1, dilation=2),
+            nn.BatchNorm1d(32),
             nn.ReLU(inplace=True),
             nn.Conv1d(32, 64, kernel_size=3, padding=1, dilation=2),
             nn.BatchNorm1d(64),
@@ -98,7 +112,10 @@ patience, bad = 8, 0
 # model training
 for epoch in range(100):
     model.train()
-    running = 0.0
+    # total accumulated loss contribution across epoch
+    epoch_loss_num = 0.0
+    # total number of labeled entries in the epoch (how many (B,K) positions counted, i.e., were not NaN)
+    epoch_loss_den = 0.0
     #xb == batch inputs, yb == batch targets
     for step, (xb, yb) in enumerate(dl, 1):
         xb, yb = xb.to(device), yb.to(device)
@@ -106,28 +123,44 @@ for epoch in range(100):
 
         opt.zero_grad()
         logits = model(xb)
-        loss = crit(logits, yb)
+        loss = masked_bce_with_logits_loss(logits, yb)
         loss.backward()
         opt.step()
 
-        running += float(loss)
-        if step % 10 == 0:
-            print(f"epoch {epoch+1} step {step} loss {running/10:.4f}")
-            running = 0.0
+        # accumulate loss
+        with torch.no_grad():
+            mask = ~torch.isnan(yb)
+            labeled = float(mask.sum())
+            epoch_loss_num += float(loss) * labeled
+            epoch_loss_den += labeled
+
+    train_loss = epoch_loss_num / max(epoch_loss_den, 1.0)
 
     # model validation
     model.eval()
-    val_loss, n = 0.0, 0
+    # accumulated loss
+    val_num = 0.0
+    # num labeled
+    val_den = 0.0
+
     with torch.no_grad():
         for xb, yb in dl_validation:
             xb, yb = xb.to(device), yb.to(device)
             xb = normalize_batch(xb)
             logits = model(xb)
-            loss = crit(logits, yb)
-            val_loss += float(loss)
-            n += yb.size(0)
-    val_loss /= max(n, 1)
-    print(f"epoch {epoch+1} loss {val_loss:.4f}")
+
+            # compute NaN masked loss and accumulate labeled sample count
+            mask = ~torch.isnan(yb)
+            labeled = float(mask.sum())
+            if labeled == 0:
+                continue
+            safe_targets = torch.nan_to_num(yb, nan=0.0)
+            loss_elem = Functional.binary_cross_entropy_with_logits(logits, safe_targets, reduction="none")
+            val_num += float((loss_elem * mask.float()).sum())
+            val_den += labeled
+
+    val_loss = val_num / max(val_den, 1.0)
+    print(f"epoch {epoch+1} train_loss {train_loss:.4f} val_loss {val_loss:.4f}")
 
     # save best model weights
     if val_loss + 1e-4 < best_val:
@@ -159,7 +192,6 @@ with torch.no_grad():
 
 for i in range(min(5, len(yb))):
     print("y[i]:", {CLASS_NAMES[j]: round(float(yb[i][j]), 2) for j in range(len(CLASS_NAMES)) if yb[i][j] > 0})
-    print("top3:", [(name, round(p, 3)) for name, p in show_topk(probs[i], 3)])
 
 # random window sample index
 i = 3
