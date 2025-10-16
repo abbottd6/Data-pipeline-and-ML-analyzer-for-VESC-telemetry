@@ -232,6 +232,16 @@ def build_plotly_bars(tsec, preds, selected_behaviors, *, stack=False):
         ["cf_accel", "cf_brake"],
         ["cf_ascent", "cf_descent"],
         ["cf_forward", "cf_reverse"],
+        ["cf_idle", "cf_brake"],
+        ["cf_idle", "cf_forward"],
+        ["cf_idle", "cf_reverse"],
+        ["cf_idle", "cf_accel"],
+        ["cf_idle", "cf_ascent"],
+        ["cf_idle", "cf_descent"],
+        ["cf_idle", "cf_turn_left"],
+        ["cf_idle", "cf_turn_right"],
+        ["cf_idle", "cf_carve_left"],
+        ["cf_idle", "cf_carve_right"],
     ]
 
     COLOR_MAP = {
