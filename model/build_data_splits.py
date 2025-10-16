@@ -9,7 +9,7 @@ all_logs = collect_csv_logs([
 
 # assign specific logs to test and validation
 # logs not specified are training logs
-VAL_LOGS = ["log_52_labeled.csv", "log_53_labeled.csv"]
+VAL_LOGS = ["log_53_labeled.csv"] # removed "log_52_labeled.csv" from validation to add to training
 TEST_LOGS = ["log_31_labeled.csv"]
 
 # create lists for the log splits
