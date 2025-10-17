@@ -24,13 +24,13 @@ def eval_masked_bce_on_loader(model, loader, normalize_batch, device):
 def eval_macro_mae_on_loader(model, loader, normalize_batch, device):
     model.eval()
     with torch.no_grad():
-        probs_list, y_list = [], []
+        probs_list, target_list = [], []
         for xb, yb in loader:
             xb = normalize_batch(xb.to(device))
             probs_list.append(torch.sigmoid(model(xb)).cpu().numpy())
-            y_list.append(yb.cpu().numpy())
+            target_list.append(yb.cpu().numpy())
     pred_probs = np.vstack(probs_list)
-    target_conf = np.vstack(y_list)
+    target_conf = np.vstack(target_list)
 
     K = pred_probs.shape[1]
     maes = []
