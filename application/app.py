@@ -23,15 +23,39 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 st.set_page_config(page_title="VESC Ride Log Analyzer", layout="wide")
 
-# model definition
+# the model
+class ResBlock(nn.Module):
+    def __init__(self, ch: int):
+        super().__init__()
+        self.block = nn.Sequential(
+            nn.Conv1d(ch, 24, kernel_size=3, padding=1),
+            # nn.BatchNorm1d(24),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(24, 24, kernel_size=3, padding=1, dilation=1),
+            nn.BatchNorm1d(24),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, x):
+        return torch.relu(x + self.block(x))
+
 class CNN(nn.Module):
     def __init__(self, c_in, c_out):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Conv1d(c_in, 64, kernel_size=5, padding=2),
-            nn.ReLU(),
-            nn.Conv1d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
+            nn.Conv1d(c_in, 24, kernel_size=3, padding=1),
+            nn.BatchNorm1d(24),
+            nn.ReLU(inplace=True),
+            ResBlock(24),
+            nn.Conv1d(24, 32, kernel_size=3, padding=1, dilation=1),
+            nn.BatchNorm1d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(32, 32, kernel_size=3, padding=1, dilation=2),
+            nn.BatchNorm1d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(32, 64, kernel_size=3, padding=1, dilation=2),
+            nn.BatchNorm1d(64),
+            nn.ReLU(inplace=True),
             nn.AdaptiveAvgPool1d(1),
         )
         self.head = nn.Linear(64, c_out)
@@ -307,7 +331,7 @@ def build_plotly_bars(tsec, preds, selected_behaviors, *, stack=False):
         barmode=("stack" if stack else "overlay"),
         hovermode="x unified",
         xaxis=dict(title="Time (s)"),
-        yaxis=dict(title="Confidence", range=[0.1, 1.0]),
+        yaxis=dict(title="Confidence", range=[0.0, 1.0]),
         legend=dict(orientation="h", y=1.12),
         template="plotly_dark",
         margin=dict(l=40, r=20, t=40, b=40),
