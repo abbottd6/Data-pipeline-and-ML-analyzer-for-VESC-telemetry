@@ -87,12 +87,12 @@ usually the initial engagement of the device because at engagement, the pitch st
 descends from ~20 degrees to 0 and then becomes negative, while the duty cycle, speed, and 
 motor current also rise dramatically here. I used this event coordination to identify a timestamp 
 in the video footage that corresponds to a particular log sample timestamp so that I could align 
-these two resources based on those times. 
-
-I then ran the log file through an additional preprocessing script with the log timestamp and video 
+these two resources based on those times. I then ran the log file through an additional preprocessing script with the log timestamp and video 
 timestamp as input so that the script could insert the corresponding video timestamp and propagate 
 video timestamps across the log at the same increment as the normalized log sample rate (100-ms, 
-or 10 Hz). This processing step enabled me to use the video timestamps along the x-axis in Label 
+or 10 Hz). 
+
+This processing step enabled me to use the video timestamps along the x-axis in Label 
 Studio, making translating behaviors in the video recordings to segments in the log files much 
 easier. The preprocessing script described above also made a few other changes to the data 
 that were essential for training the model. A primary feature of the preprocessing script is the 
@@ -415,3 +415,48 @@ to the model output:
 • 2025-09-28_14-10-31.csv - ride log 35:
 
 • 2025-09-28_14-55-42.csv - ride log 42:
+
+
+### References
+
+Aston, Z., Gashler, M., Lockett, C., Mu, Z., & Tang, D. (n.d.). Padding and stride (Section 7.3). In 
+Dive into Deep Learning. Retrieved from https://d2l.ai/chapter_convolutional-neural
+networks/padding-and-strides.html 
+
+GeeksforGeeks. (2025a, July 23). ReLU activation function in deep learning. 
+https://www.geeksforgeeks.org/deep-learning/relu-activation-function-in-deep
+learning/ 
+
+GeeksforGeeks. (2025b, April 17). Residual Networks (ResNet) – Deep Learning. Retrieved from 
+https://www.geeksforgeeks.org/residual-networks-resnet-deep-learning/ 
+GeeksforGeeks. (2024, February 19). What is a 1D Convolutional Layer in Deep Learning? 
+Retrieved from https://www.geeksforgeeks.org/deep-learning/what-is-a-1d
+convolutional-layer-in-deep-learning/ 
+
+PyTorch. (n.d.-a). torch.nn.AdaptiveAvgPool1d [Documentation]. Retrieved from 
+https://docs.pytorch.org/docs/stable/generated/torch.nn.AdaptiveAvgPool1d.html 
+
+PyTorch. (n.d.-b). torch.nn.BatchNorm1d [Documentation]. Retrieved from 
+https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html 
+
+PyTorch. (n.d.-c) (Conv1d) 
+PyTorch. (n.d.). torch.nn.Conv1d [Documentation]. Retrieved from 
+https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html 
+
+PyTorch. (n.d.-d). torch.nn.BCEWithLogitsLoss [Documentation]. Retrieved from 
+https://docs.pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html 
+
+PyTorch. (n.d.-e). torch.optim.Adam [Documentation]. Retrieved from 
+https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html 
+
+PyTorch. (n.d.-f). torch.no_grad [Documentation]. Retrieved from 
+https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html 
+
+Szymański, P., & Kajdanowicz, T. (2017). Scikit-multilearn: A scikit-based Python environment 
+for performing multi-label classification (Abs. ¶ 1). Journal of Machine Learning 
+Research: Machine Learning Open Source Software (MLOSS) Workshop. arXiv. 
+https://arxiv.org/abs/1702.01460
+
+Wikipedia contributors. (2024, November 6). Mean absolute error. In Wikipedia, The Free 
+Encyclopedia. Retrieved October 15, 2025, from 
+https://en.wikipedia.org/wiki/Mean_absolute_error
