@@ -223,8 +223,10 @@ across all labeled behaviors. Validation and training loss are reported for each
 validation loss is used for early stopping when the loss stops improving. Here is a sample output 
 from the training and validation: 
 
-![img.png](readme_images/training_epochs_img1.png)
-![img.png](readme_images/training_epochs_img2.png)
+<img src="readme_images/training_epochs_img1.png" alt="Console Training Output" height="500">
+
+<img src="readme_images/training_epochs_img2.png" alt="Console Training Output" height="450">
+
 
 ### Validation Methods
 
