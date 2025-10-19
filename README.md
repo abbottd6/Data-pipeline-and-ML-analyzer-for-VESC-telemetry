@@ -336,9 +336,9 @@ analysis and review. Adjust the plot classes as desired and rerun the analysis.
 I have uploaded some of the video recordings for the demo logs if you would like to review them for comparison
 to the model output:
 
-• 2025-09-28_13-59-59.csv - ride log 31: youtube links coming soon
+• 2025-09-28_13-59-59.csv - ride log 31: https://youtu.be/286ODOmYgR4
 
-• 2025-09-28_14-10-31.csv - ride log 35:
+• 2025-09-28_14-10-31.csv - ride log 35: coming soon
 
 • 2025-09-28_14-55-42.csv - ride log 42:
 
@@ -410,9 +410,9 @@ analysis and review. Adjust the plot classes as desired and rerun the analysis.
 I have uploaded some of the video recordings for the demo logs if you would like to review them for comparison
 to the model output:
 
-• 2025-09-28_13-59-59.csv - ride log 31: youtube links coming soon
+• 2025-09-28_13-59-59.csv - ride log 31: https://youtu.be/286ODOmYgR4
 
-• 2025-09-28_14-10-31.csv - ride log 35:
+• 2025-09-28_14-10-31.csv - ride log 35: Coming soon
 
 • 2025-09-28_14-55-42.csv - ride log 42:
 
