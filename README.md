@@ -7,8 +7,11 @@ Demo:
 - Go to the HuggingFace Spaces deployed demo and restart the app:
   https://huggingface.co/spaces/daytondotdev/VESC_Tool_OW_Log_Analyzer
 - While the app is restarting, download the 2025-09-28_**13-59-59**.csv file from the DEMO_LOGS folder in the root of this repo
+  Open the DEMO_LOGS folder:
    <img width="166" height="42" alt="image" src="https://github.com/user-attachments/assets/39262637-c382-49b9-a8cb-44e35a276663" />
+  Open the demo log file: 
    <img width="263" height="45" alt="image" src="https://github.com/user-attachments/assets/aa63b843-9306-467d-b775-41721fc0d582" />
+  Download the raw file: 
    <img width="388" height="160" alt="image" src="https://github.com/user-attachments/assets/e6e120ce-2eac-4bc6-9cbf-c165a138b3fc" />
 
 - Go to the ride footage video on YouTube to view the footage that corresponds to this log file:
