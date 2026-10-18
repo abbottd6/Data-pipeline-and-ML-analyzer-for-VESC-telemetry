@@ -1,5 +1,7 @@
 # VESC ML Telemetry Analyzer
 
+<img width="1765" height="696" alt="image" src="https://github.com/user-attachments/assets/3311a350-6717-4d83-be66-bee25c6e30ce" />
+<br><br>
 <img width="1735" height="441" alt="analyzer_close_up" src="https://github.com/user-attachments/assets/75aeb827-3bef-4590-9218-736b365d49ca" />
 
 Demo:
