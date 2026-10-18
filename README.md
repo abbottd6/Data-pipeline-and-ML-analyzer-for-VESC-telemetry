@@ -6,7 +6,7 @@ Demo:
 
 - Go to the HuggingFace Spaces deployed demo and restart the app:
   https://huggingface.co/spaces/daytondotdev/VESC_Tool_OW_Log_Analyzer
-- While the app is restarting, download the 2025-09-28_**13-59-59**.csv file from the DEMO_LOGS folder in the root of this repo
+- While the app is restarting, download the 2025-09-28_**13-59-59**.csv file from the DEMO_LOGS folder in the root of this repo <br>
   Open the DEMO_LOGS folder: <br>
    <img width="166" height="42" alt="image" src="https://github.com/user-attachments/assets/39262637-c382-49b9-a8cb-44e35a276663" />
   <br> 
