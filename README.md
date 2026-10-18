@@ -2,6 +2,20 @@
 
 <img width="1735" height="441" alt="analyzer_close_up" src="https://github.com/user-attachments/assets/75aeb827-3bef-4590-9218-736b365d49ca" />
 
+Demo:
+
+- Go to the HuggingFace Spaces deployed demo and restart the app:
+  https://huggingface.co/spaces/daytondotdev/VESC_Tool_OW_Log_Analyzer
+- While the app is restarting, download the 2025-09-28_**13-59-59**.csv file from the DEMO_LOGS folder in the root of this repo
+   <img width="166" height="42" alt="image" src="https://github.com/user-attachments/assets/39262637-c382-49b9-a8cb-44e35a276663" />
+   <img width="263" height="45" alt="image" src="https://github.com/user-attachments/assets/aa63b843-9306-467d-b775-41721fc0d582" />
+   <img width="388" height="160" alt="image" src="https://github.com/user-attachments/assets/e6e120ce-2eac-4bc6-9cbf-c165a138b3fc" />
+
+- Go to the ride footage video on YouTube to view the footage that corresponds to this log file:
+  https://youtu.be/286ODOmYgR4
+- Once the HuggingFace app loads, click 'Browse files' and upload the log file from your downloads folder
+- Then click 'Run Analysis'
+
 ### Overview
 
 The purpose of the VESC Analyzer project is to train a machine learning model to 
@@ -339,10 +353,6 @@ I have uploaded some of the video recordings for the demo logs if you would like
 to the model output:
 
 • 2025-09-28_13-59-59.csv - ride log 31: https://youtu.be/286ODOmYgR4
-
-• 2025-09-28_14-10-31.csv - ride log 35: coming soon
-
-• 2025-09-28_14-55-42.csv - ride log 42:
 
 #### Running The Application Locally
 
