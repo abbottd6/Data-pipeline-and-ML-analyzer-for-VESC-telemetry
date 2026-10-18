@@ -1,6 +1,6 @@
 # VESC ML Telemetry Analyzer
 
-Sample Log 2025-09-28_14-10-31_processed.csv: <br>
+Sample Log 2025-09-28_14-10-31.csv: <br>
 <img width="1765" height="696" alt="image" src="https://github.com/user-attachments/assets/3311a350-6717-4d83-be66-bee25c6e30ce" />
 <br><br>
 
