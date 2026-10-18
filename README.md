@@ -1,5 +1,7 @@
 # VESC ML Telemetry Analyzer
 
+<img width="1735" height="441" alt="analyzer_close_up" src="https://github.com/user-attachments/assets/75aeb827-3bef-4590-9218-736b365d49ca" />
+
 ### Overview
 
 The purpose of the VESC Analyzer project is to train a machine learning model to 
